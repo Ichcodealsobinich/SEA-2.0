@@ -20,9 +20,9 @@ public class PersonsRepository {
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.setLong(1, p.getId());
-			ps.setByte(2, p.getAnrede().toByte());
-			ps.setString(3, p.getVorname());
-			ps.setString(4, p.getNachname());
+			ps.setByte(2, p.getSalutation().toByte());
+			ps.setString(3, p.getFirstname());
+			ps.setString(4, p.getLastname());
 			ps.execute();
 		} catch (Exception e) {return false;}
 		return true;
@@ -37,9 +37,9 @@ public class PersonsRepository {
 				+ "WHERE ID=?;";		
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.setLong(1, p.getId());
-			ps.setByte(2, p.getAnrede().toByte());
-			ps.setString(3, p.getVorname());
-			ps.setString(4, p.getNachname());
+			ps.setByte(2, p.getSalutation().toByte());
+			ps.setString(3, p.getFirstname());
+			ps.setString(4, p.getLastname());
 			ps.setLong(5, p.getId());
 			ps.execute();
 		} catch (Exception e) {return false;}
@@ -74,9 +74,9 @@ public class PersonsRepository {
 				if (rs.next()) {
 					Person person = new Person();
 					person.setId(rs.getLong(1));
-					person.setAnrede(rs.getByte(2));
-					person.setVorname(rs.getString(3));
-					person.setNachname(rs.getString(4));
+					person.setSalutation(rs.getByte(2));
+					person.setFirstName(rs.getString(3));
+					person.setLastName(rs.getString(4));
 					return person;
 				}
 			}catch (Exception e) {throw new NoSuchElementException();};
@@ -107,9 +107,9 @@ public class PersonsRepository {
 				while (rs.next()) {
 					Person person = new Person();
 					person.setId(rs.getLong(1));
-					person.setAnrede(rs.getByte(2));
-					person.setVorname(rs.getString(3));
-					person.setNachname(rs.getString(4));
+					person.setSalutation(rs.getByte(2));
+					person.setFirstName(rs.getString(3));
+					person.setLastName(rs.getString(4));
 					persons[i] = person;
 					i++;
 				}

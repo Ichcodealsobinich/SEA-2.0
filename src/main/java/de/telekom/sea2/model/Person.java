@@ -4,66 +4,66 @@ import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.BaseObject;
 
 public class Person extends BaseObject{
-	private String vorname;
-	private String nachname;
-	private Salutation anrede;
+	private String firstname;
+	private String lastname;
+	private Salutation salutation;
 	
-	public Salutation getAnrede() {
-		return anrede;
+	public Salutation getSalutation() {
+		return salutation;
 	}
-	public void setAnrede(Salutation anrede) {
-		this.anrede = anrede;
+	public void setSalutation(Salutation anrede) {
+		this.salutation = anrede;
 	}
-	public void setAnrede(byte b) {
-		this.anrede = Salutation.fromByte(b);
+	public void setSalutation(byte b) {
+		this.salutation = Salutation.fromByte(b);
 	}
-	public void setVorname(final String vn) {
-		if (this.isValidName(vn)) {this.vorname = vn;}
+	public void setFirstName(final String vn) {
+		if (this.isValidName(vn)) {this.firstname = vn;}
 	}
-	public void setNachname(final String nn) {
-		if (this.isValidName(nn)) {this.nachname=nn;}
+	public void setLastName(final String nn) {
+		if (this.isValidName(nn)) {this.lastname=nn;}
 	}
 
-	public String getVorname() {
-		return this.vorname;
+	public String getFirstname() {
+		return this.firstname;
 	}
-	public String getNachname() {
-		return this.nachname;
+	public String getLastname() {
+		return this.lastname;
 	}
 
 	//constructor
 	public Person() {
-		this.setVorname("");
-		this.setNachname("");
-		this.setAnrede(Salutation.OTHER);
+		this.setFirstName("");
+		this.setLastName("");
+		this.setSalutation(Salutation.OTHER);
 	}
 	//constructor with parameters
 	public Person(final String vn, final String nn, final String salutation) {
-		if (this.isValidName(vn)) {this.setVorname(vn);}
-		else {this.setVorname("");}
-		if (this.isValidName(nn)) {this.setNachname(nn);}
-		else {this.setNachname("");}
-		this.anrede = Salutation.fromString(salutation);
+		if (this.isValidName(vn)) {this.setFirstName(vn);}
+		else {this.setFirstName("");}
+		if (this.isValidName(nn)) {this.setLastName(nn);}
+		else {this.setLastName("");}
+		this.salutation = Salutation.fromString(salutation);
 	}
 
 	public boolean equals(final Person p) {
 		return  	(super.equals(p)) && 
-					(this.getAnrede()==p.getAnrede()) &&	
-					(this.getVorname()==p.getVorname()) && 
-					(this.getNachname()==p.getNachname());
+					(this.getSalutation()==p.getSalutation()) &&	
+					(this.getFirstname()==p.getFirstname()) && 
+					(this.getLastname()==p.getLastname());
 	}
 	
 	public Person clone() {
 		Person clone = new Person();
-		clone.setVorname(this.getVorname());
-		clone.setNachname(this.getNachname());
-		clone.setAnrede(this.getAnrede());
+		clone.setFirstName(this.getFirstname());
+		clone.setLastName(this.getLastname());
+		clone.setSalutation(this.getSalutation());
 		return clone;
 	}
 	
 	@Override
 	public String toString() {
-		return "Id: " + getId() + " " + anrede + " " + vorname + " " + nachname;
+		return "Id: " + getId() + " " + salutation + " " + firstname + " " + lastname;
 	}
 	
 	public boolean isValidName(final String name) {

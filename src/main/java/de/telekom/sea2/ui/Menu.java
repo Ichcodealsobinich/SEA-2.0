@@ -94,9 +94,9 @@ public class Menu extends BaseObject{
 			return;
 			
 		}		
-		p.setVorname(firstName);
-		p.setNachname(lastName);
-		p.setAnrede(salut);
+		p.setFirstName(firstName);
+		p.setLastName(lastName);
+		p.setSalutation(salut);
 		pr.create(p);
 	}
 	
