@@ -57,12 +57,15 @@ public class PersonsRepository {
 	}
 	
 	public boolean delete(Person p) {
+		Boolean result = false;
 		String sql = "DELETE FROM personen WHERE id=?";
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.setLong(1, p.getId());
-			ps.execute();
-		} catch (Exception e) {return false;}
-		return true;
+			result = ps.execute();
+		} catch (Exception e) {
+			result = false;
+		}
+		return result;
 	}
 	
 	public Person get(long id) throws NoSuchElementException{
@@ -78,11 +81,12 @@ public class PersonsRepository {
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
 					return person;
+				} else {
+					throw new NoSuchElementException();
 				}
-			}catch (Exception e) {throw new NoSuchElementException();};
+			}catch (Exception e) {throw new NoSuchElementException();}
 			
 		}catch (Exception e) {throw new NoSuchElementException();}
-		return new Person();
 	}
 	
 	public Person[] getAll() throws Exception{
