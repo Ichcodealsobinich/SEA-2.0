@@ -119,7 +119,10 @@ public class Menu extends BaseObject{
 	private void removePerson() {
 		System.out.print("Bitte id eingeben");
 		int id = scanner.nextInt();
-		pr.delete(id);
+		Boolean result = pr.delete(id);
+		if (!result){
+			System.out.println("Person konnte nicht gelöscht werden");
+		}
 		scanner.nextLine();
 	}
 	
