@@ -1,41 +1,50 @@
 package de.telekom.sea2.lookup;
 
 public enum Salutation {
-	HERR,
-	FRAU,
-	DIVERS;
+	MR,
+	MISS,
+	OTHER;
 	
 	public static Salutation fromString(String s) {
 		switch (s.toUpperCase()) {
 			case "M":
 			case "HERR": 
 			case "MISTER":
-				return HERR;
+				return MR;
 			case "F":
 			case "FRAU": 	
 			case "MISS":
-					return FRAU;
+					return MISS;
 			default: 		
-					return DIVERS;
+					return OTHER;
 		}
 	}
 	
 	@Override
 	public String toString() {
 		switch (this) {
-		case HERR: 		return "Herr";
-		case FRAU: 		return "Frau";
-		case DIVERS: 	
-		default:		return "keine Anrede";
+		case MR: 		return "Herr";
+		case MISS: 		return "Frau";
+		case OTHER: 	
+		default:		return "Person";
 		}
 	}
 	
 	public byte toByte() {
 		switch (this) {
-		case HERR: 		return 1;
-		case FRAU: 		return 2;
-		case DIVERS: 	
-		default:		return 3;
+			case MR: 		return 1;
+			case MISS: 		return 2;
+			case OTHER: 	
+			default:		return 3;
+		}
+	}
+	
+	public static Salutation fromByte(Byte b) {
+		switch (b) {
+			case 1: 		return MR;
+			case 2: 		return MISS;
+			case 3: 	
+			default:		return OTHER;
 		}
 	}
 }

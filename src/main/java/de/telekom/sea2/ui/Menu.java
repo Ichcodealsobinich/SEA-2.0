@@ -3,6 +3,9 @@ package de.telekom.sea2.ui;
 import de.telekom.sea2.persistence.*;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.lookup.*;
+
+import java.util.NoSuchElementException;
+
 import de.telekom.sea2.*;
 
 
@@ -97,19 +100,20 @@ public class Menu extends BaseObject{
 		pr.create(p);
 	}
 	
-	//list all persons in list
-	private void listAllPersons() {			//
-		System.out.println("---Die aktuelle Liste sieht so aus:---");
-		Person[] list = pr.getAll();
-		if (list.length==0) {
-			System.out.println("Die Liste ist leer");
-		} else {
-			for (int i=0;i<list.length;i++) {
-				if (list[i] != null) {
-					System.out.println(list[i].toString());
+	private void listAllPersons() {					
+		try {
+			Person[] list = pr.getAll();
+			System.out.println("---Die aktuelle Liste sieht so aus:---");
+			if (list.length==0) {
+				System.out.println("Die Liste ist leer");
+			} else {
+				for (int i=0;i<list.length;i++) {
+					if (list[i] != null) {
+						System.out.println(list[i].toString());
+					}
 				}
 			}
-		}
+		}catch (Exception e) {System.out.println("Das hat leider nicht geklappt");}
 	}
 	
 	private void removePerson() {
@@ -122,8 +126,12 @@ public class Menu extends BaseObject{
 	public void getPerson() {
 		System.out.println("Bitte Index eingeben");
 		int index = scanner.nextInt();
-		Person p = (Person) pr.get(index);
-		System.out.println("Index: "+ index + ", " +p.toString());
+		try {
+			Person p = pr.get(index);
+			System.out.println("Index: "+ index + ", " +p.toString());
+		} catch (NoSuchElementException e) {
+			System.out.println("Person nicht gefunden");
+		}
 		scanner.nextLine();
 	}
 	

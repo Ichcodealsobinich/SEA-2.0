@@ -45,7 +45,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>de.telekom.jdbcchallenge.Main</mainClass>
+							<mainClass>de.telekom.sea2.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

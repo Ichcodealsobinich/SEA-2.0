@@ -15,14 +15,7 @@ public class Person extends BaseObject{
 		this.anrede = anrede;
 	}
 	public void setAnrede(byte b) {
-		switch (b) {
-		case 1: 		this.anrede=Salutation.HERR;
-						break;
-		case 2: 		this.anrede=Salutation.FRAU;
-						break;
-		case 3: 	
-		default:		this.anrede=Salutation.DIVERS;
-		}
+		this.anrede = Salutation.fromByte(b);
 	}
 	public void setVorname(final String vn) {
 		if (this.isValidName(vn)) {this.vorname = vn;}
@@ -42,7 +35,7 @@ public class Person extends BaseObject{
 	public Person() {
 		this.setVorname("");
 		this.setNachname("");
-		this.setAnrede(Salutation.DIVERS);
+		this.setAnrede(Salutation.OTHER);
 	}
 	//constructor with parameters
 	public Person(final String vn, final String nn, final String salutation) {

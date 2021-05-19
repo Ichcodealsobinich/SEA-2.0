@@ -1,6 +1,7 @@
 package de.telekom.sea2.persistence;
 
 import java.sql.*;
+import java.util.NoSuchElementException;
 
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.*;
@@ -64,7 +65,7 @@ public class PersonsRepository {
 		return true;
 	}
 	
-	public Person get(long id) {
+	public Person get(long id) throws NoSuchElementException{
 		
 		String query= "SELECT * FROM personen WHERE id=?";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
@@ -78,13 +79,13 @@ public class PersonsRepository {
 					person.setNachname(rs.getString(4));
 					return person;
 				}
-			}catch (Exception e) {System.out.println("Problem with rs");};
+			}catch (Exception e) {throw new NoSuchElementException();};
 			
-		}catch (Exception e) {System.out.println("Problem with ps");}
+		}catch (Exception e) {throw new NoSuchElementException();}
 		return new Person();
 	}
 	
-	public Person[] getAll(){
+	public Person[] getAll() throws Exception{
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
 			try (ResultSet rs = ps.executeQuery()){
@@ -99,6 +100,8 @@ public class PersonsRepository {
 				}
 				Person[] persons = new Person[size];
 				
+				long counter = BaseObject.getCounter();
+				
 				/*iterate through result and write into array*/
 				int i = 0;
 				while (rs.next()) {
@@ -110,11 +113,10 @@ public class PersonsRepository {
 					persons[i] = person;
 					i++;
 				}
+				BaseObject.setCounter(counter);
 				return persons;
-			}catch (Exception e) {System.out.println("Problem with rs");};
-			
-		}catch (Exception e) {System.out.println("Problem with ps");}
-		return new Person[0];
+			}catch (Exception e) {throw new Exception();}			
+		}catch (Exception e) {throw new Exception();}
 	}
 	
 	public long getHighestId() {
