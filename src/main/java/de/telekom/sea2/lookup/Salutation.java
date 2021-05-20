@@ -2,19 +2,21 @@ package de.telekom.sea2.lookup;
 
 public enum Salutation {
 	MR,
-	MISS,
+	MRS,
 	OTHER;
 	
 	public static Salutation fromString(String s) {
 		switch (s.toUpperCase()) {
 			case "M":
+			case "MR":
 			case "HERR": 
 			case "MISTER":
 				return MR;
 			case "F":
 			case "FRAU": 	
 			case "MISS":
-					return MISS;
+			case "MRS":
+					return MRS;
 			default: 		
 					return OTHER;
 		}
@@ -24,7 +26,7 @@ public enum Salutation {
 	public String toString() {
 		switch (this) {
 		case MR: 		return "Herr";
-		case MISS: 		return "Frau";
+		case MRS: 		return "Frau";
 		case OTHER: 	
 		default:		return "Person";
 		}
@@ -33,7 +35,7 @@ public enum Salutation {
 	public byte toByte() {
 		switch (this) {
 			case MR: 		return 1;
-			case MISS: 		return 2;
+			case MRS: 		return 2;
 			case OTHER: 	
 			default:		return 3;
 		}
@@ -42,7 +44,7 @@ public enum Salutation {
 	public static Salutation fromByte(Byte b) {
 		switch (b) {
 			case 1: 		return MR;
-			case 2: 		return MISS;
+			case 2: 		return MRS;
 			case 3: 	
 			default:		return OTHER;
 		}
