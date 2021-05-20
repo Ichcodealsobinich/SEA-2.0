@@ -1,6 +1,7 @@
 package de.telekom.sea2.persistence;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import de.telekom.sea2.model.*;
@@ -89,40 +90,72 @@ public class PersonsRepository {
 		}catch (Exception e) {throw new NoSuchElementException();}
 	}
 	
-	public Person[] getAll() throws Exception{
+	public ArrayList<Person> getAll() throws Exception{
+		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
 			try (ResultSet rs = ps.executeQuery()){
-				
-				/*find out how big the array will be*/
-				int size =0;
-				if (rs != null) 
-				{
-				  rs.last();    // moves cursor to the last row
-				  size = rs.getRow(); // get row id 
-				  rs.beforeFirst();
-				}
-				Person[] persons = new Person[size];
-				
+								
 				//we do not want to unnecessarily boost the counter
 				long counter = BaseObject.getCounter();
 				
-				/*iterate through result and write into array*/
-				int i = 0;
+				/*iterate through result and write into ArrayList*/
 				while (rs.next()) {
 					Person person = new Person();
 					person.setId(rs.getLong(1));
 					person.setSalutation(rs.getByte(2));
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
-					persons[i] = person;
-					i++;
+					list.add(person);
 				}
 				//we do not want to unnecessarily boost the counter
 				BaseObject.setCounter(counter);
-				return persons;
+				return list;
 			}catch (Exception e) {throw new Exception();}			
 		}catch (Exception e) {throw new Exception();}
+	}
+	
+	public ArrayList<Person> find(String firstname, String lastname) {
+		ArrayList<Person> list = new ArrayList<Person>();
+		String query= "SELECT * FROM personen WHERE vorname LIKE ? AND nachname LIKE ?";
+		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+			ps.setString(1, firstname);
+			ps.setString(2, lastname);
+			try (ResultSet rs = ps.executeQuery()){
+				long counter = BaseObject.getCounter();
+				while (rs.next()) {
+					Person person = new Person();
+					person.setId(rs.getLong(1));
+					person.setSalutation(rs.getByte(2));
+					person.setFirstName(rs.getString(3));
+					person.setLastName(rs.getString(4));
+					list.add(person);
+				}
+				BaseObject.setCounter(counter);
+			}catch (Exception e) {}
+		}catch (Exception e) {}
+		return list;
+	}
+	
+	public ArrayList<Person> find(String lastname) {
+		ArrayList<Person> list = new ArrayList<Person>();
+		String query= "SELECT * FROM personen WHERE nachname LIKE ?";
+		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+			ps.setString(1, lastname);
+			try (ResultSet rs = ps.executeQuery()){
+				long counter = BaseObject.getCounter();
+				while (rs.next()) {
+					Person person = new Person();
+					person.setId(rs.getLong(1));
+					person.setSalutation(rs.getByte(2));
+					person.setFirstName(rs.getString(3));
+					person.setLastName(rs.getString(4));
+					list.add(person);
+				}
+				BaseObject.setCounter(counter);
+			}catch (Exception e) {}
+		}catch (Exception e) {}
+		return list;
 	}
 	
 	public boolean deleteAll() {
