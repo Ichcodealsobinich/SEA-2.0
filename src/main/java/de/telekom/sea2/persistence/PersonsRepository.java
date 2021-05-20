@@ -104,6 +104,7 @@ public class PersonsRepository {
 				}
 				Person[] persons = new Person[size];
 				
+				//we do not want to unnecessarily boost the counter
 				long counter = BaseObject.getCounter();
 				
 				/*iterate through result and write into array*/
@@ -117,12 +118,20 @@ public class PersonsRepository {
 					persons[i] = person;
 					i++;
 				}
+				//we do not want to unnecessarily boost the counter
 				BaseObject.setCounter(counter);
 				return persons;
 			}catch (Exception e) {throw new Exception();}			
 		}catch (Exception e) {throw new Exception();}
 	}
 	
+	public boolean deleteAll() {
+		String sql = "DELETE FROM personen";
+		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
+			ps.execute();
+		} catch (Exception e) {return false;}
+		return true;
+	}
 	public long getHighestId() {
 		long id = 0;
 		String query= "SELECT * FROM personen";

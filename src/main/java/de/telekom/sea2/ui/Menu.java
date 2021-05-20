@@ -40,6 +40,7 @@ public class Menu extends BaseObject{
 		System.out.println("* 2: Liste anzeigen   *");
 		System.out.println("* 3: Person löschen   *");
 		System.out.println("* 4. Person ausgeben  *");
+		System.out.println("* 5. Liste löschen    *");
 		System.out.println("* q: Zurück           *");
 		System.out.println("***********************");
 	}
@@ -63,6 +64,9 @@ public class Menu extends BaseObject{
 						break;
 			case "4":   System.out.println("Person ausgeben");
 						getPerson();
+						break;
+			case "5":	System.out.println("Liste löschen");
+						deleteAll();
 						break;
 			case "q":   break;
 			default: 	System.out.println("Falsche Eingabe.");		
@@ -124,6 +128,21 @@ public class Menu extends BaseObject{
 			System.out.println("Person konnte nicht gelöscht werden");
 		}
 		scanner.nextLine();
+	}
+	
+	public void deleteAll() {
+		String confirmation = "";
+		Boolean result =false;
+		System.out.println("Sind Sie sicher? Bitte \"yes\" eingeben");
+		confirmation = scanner.nextLine().trim();
+		if (confirmation.toUpperCase().equals("YES")) {
+			result = pr.deleteAll();
+			if (result) {
+				System.out.println("Alle Einträge erfolgreich gelöscht");
+			} else {
+				System.out.println("Leider ist etwas schiefgegangen");
+			}
+		}
 	}
 	
 	public void getPerson() {
