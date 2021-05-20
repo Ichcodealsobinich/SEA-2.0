@@ -41,6 +41,7 @@ public class Menu extends BaseObject{
 		System.out.println("* 3: Person löschen   *");
 		System.out.println("* 4. Person ausgeben  *");
 		System.out.println("* 5. Liste löschen    *");
+		System.out.println("* 6. Einträge zählen  *");
 		System.out.println("* q: Zurück           *");
 		System.out.println("***********************");
 	}
@@ -67,6 +68,9 @@ public class Menu extends BaseObject{
 						break;
 			case "5":	System.out.println("Liste löschen");
 						deleteAll();
+						break;
+			case "6":	System.out.println("Anzahl der Einträge");
+						System.out.println(pr.getCount());
 						break;
 			case "q":   break;
 			default: 	System.out.println("Falsche Eingabe.");		
@@ -158,38 +162,7 @@ public class Menu extends BaseObject{
 	}
 	
 	private boolean validateName(String name) {
-		if (name.contains("\\"))return false;
-		if (name.contains("/")) return false;
-		if (name.contains("\""))return false;
-		if (name.contains("§")) return false;
-		if (name.contains("$")) return false;
-		if (name.contains("!")) return false;
-		if (name.contains("&")) return false;
-		if (name.contains("(")) return false;
-		if (name.contains(")")) return false;
-		if (name.contains("[")) return false;
-		if (name.contains("]")) return false;
-		if (name.contains("{")) return false;
-		if (name.contains("}")) return false;
-		if (name.contains("+")) return false;
-		if (name.contains("#")) return false;
-		if (name.contains(",")) return false;
-		if (name.contains(";")) return false;
-		if (name.contains(".")) return false;
-		if (name.contains(":")) return false;
-		if (name.contains("<")) return false;
-		if (name.contains(">")) return false;
-		if (name.contains("1")) return false;
-		if (name.contains("2")) return false;
-		if (name.contains("3")) return false;
-		if (name.contains("4")) return false;
-		if (name.contains("5")) return false;
-		if (name.contains("6")) return false;
-		if (name.contains("7")) return false;
-		if (name.contains("8")) return false;
-		if (name.contains("9")) return false;
-		if (name.contains("0")) return false;
-		return true;
+		return name != null && name.chars().allMatch(Character::isLetter);
 	}
 	
 	public void close() {

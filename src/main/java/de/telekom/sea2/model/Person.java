@@ -67,28 +67,6 @@ public class Person extends BaseObject{
 	}
 	
 	public boolean isValidName(final String name) {
-
-		if (name.contains("\\"))return false;
-		if (name.contains("/")) return false;
-		if (name.contains("\""))return false;
-		if (name.contains("§")) return false;
-		if (name.contains("$")) return false;
-		if (name.contains("!")) return false;
-		if (name.contains("&")) return false;
-		if (name.contains("(")) return false;
-		if (name.contains(")")) return false;
-		if (name.contains("[")) return false;
-		if (name.contains("]")) return false;
-		if (name.contains("{")) return false;
-		if (name.contains("}")) return false;
-		if (name.contains("+")) return false;
-		if (name.contains("#")) return false;
-		if (name.contains(",")) return false;
-		if (name.contains(";")) return false;
-		if (name.contains(".")) return false;
-		if (name.contains(":")) return false;
-		if (name.contains("<")) return false;
-		if (name.contains(">")) return false;	
-		return true;
+		return name != null && name.chars().allMatch(Character::isLetter);
 	}
 }

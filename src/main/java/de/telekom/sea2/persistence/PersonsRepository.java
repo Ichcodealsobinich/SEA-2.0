@@ -132,6 +132,20 @@ public class PersonsRepository {
 		} catch (Exception e) {return false;}
 		return true;
 	}
+	
+	public int getCount() {
+		String query= "SELECT COUNT(*) FROM personen";
+		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+			try (ResultSet rs = ps.executeQuery()){
+				rs.next();
+				return rs.getInt(1);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}	
+	}
+	
 	public long getHighestId() {
 		long id = 0;
 		String query= "SELECT * FROM personen";
