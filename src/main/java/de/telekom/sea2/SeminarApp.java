@@ -18,7 +18,8 @@ public class SeminarApp {
 				.getConnection("jdbc:mariadb://localhost:3306/seadb?user=seauser&password=seapass");){
 			
 			PersonsRepository pr = new PersonsRepository(connection);
-			Menu menu = new Menu(pr);
+			SeminarRepository sr = new SeminarRepository(connection,pr);
+			Menu menu = new Menu(pr,sr);
 			menu.show();
 		}catch (Exception e) {
 			System.out.println("Could not establish database connection. Shutting down.");

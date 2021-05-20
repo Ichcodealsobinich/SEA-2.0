@@ -16,17 +16,18 @@ public class PersonsRepository {
 		this.connection = c; 
 	}
 	
-	public boolean create(Person p) {
+	public long create(Person p) {
 		
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
+		p.setId(getNewUniqueId());
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.setLong(1, p.getId());
 			ps.setByte(2, p.getSalutation().toByte());
 			ps.setString(3, p.getFirstname());
 			ps.setString(4, p.getLastname());
 			ps.execute();
-		} catch (Exception e) {return false;}
-		return true;
+		} catch (Exception e) {return -1;}
+		return p.getId();
 	}
 	
 	public boolean update(Person p) {
@@ -94,11 +95,7 @@ public class PersonsRepository {
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
-			try (ResultSet rs = ps.executeQuery()){
-								
-				//we do not want to unnecessarily boost the counter
-				long counter = BaseObject.getCounter();
-				
+			try (ResultSet rs = ps.executeQuery()){				
 				/*iterate through result and write into ArrayList*/
 				while (rs.next()) {
 					Person person = new Person();
@@ -108,8 +105,6 @@ public class PersonsRepository {
 					person.setLastName(rs.getString(4));
 					list.add(person);
 				}
-				//we do not want to unnecessarily boost the counter
-				BaseObject.setCounter(counter);
 				return list;
 			}catch (Exception e) {throw new Exception();}			
 		}catch (Exception e) {throw new Exception();}
@@ -122,7 +117,6 @@ public class PersonsRepository {
 			ps.setString(1, firstname);
 			ps.setString(2, lastname);
 			try (ResultSet rs = ps.executeQuery()){
-				long counter = BaseObject.getCounter();
 				while (rs.next()) {
 					Person person = new Person();
 					person.setId(rs.getLong(1));
@@ -131,7 +125,6 @@ public class PersonsRepository {
 					person.setLastName(rs.getString(4));
 					list.add(person);
 				}
-				BaseObject.setCounter(counter);
 			}catch (Exception e) {}
 		}catch (Exception e) {}
 		return list;
@@ -143,7 +136,6 @@ public class PersonsRepository {
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
 			ps.setString(1, lastname);
 			try (ResultSet rs = ps.executeQuery()){
-				long counter = BaseObject.getCounter();
 				while (rs.next()) {
 					Person person = new Person();
 					person.setId(rs.getLong(1));
@@ -152,7 +144,6 @@ public class PersonsRepository {
 					person.setLastName(rs.getString(4));
 					list.add(person);
 				}
-				BaseObject.setCounter(counter);
 			}catch (Exception e) {}
 		}catch (Exception e) {}
 		return list;
@@ -179,7 +170,19 @@ public class PersonsRepository {
 		}	
 	}
 	
-	public long getHighestId() {
+	public boolean exists(Long id) {
+		String query = "SELECT COUNT(1) FROM personen WHERE id= ?;";
+		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+			ps.setLong(1, id);
+			try (ResultSet rs = ps.executeQuery()){
+				rs.next();
+				if (rs.getLong(1) == 1) {return true;}
+				else {return false;}
+			}catch (Exception e) {return false;}
+		} catch (Exception e) {return false;}
+	}
+	
+	private long getHighestId() {
 		long id = 0;
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
@@ -192,5 +195,8 @@ public class PersonsRepository {
 			}catch (Exception e) {System.out.println("Problem with rs");};
 		}catch (Exception e){}
 		return id;
+	}
+	private long getNewUniqueId() {
+		return getHighestId() +1;
 	}
 }

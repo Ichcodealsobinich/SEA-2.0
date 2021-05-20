@@ -13,19 +13,19 @@ import de.telekom.sea2.*;
 public class Menu extends BaseObject{
 	
 	private PersonsRepository pr;
+	private SeminarRepository sr;
 	private String result;
 	private java.util.Scanner scanner = new java.util.Scanner(System.in);
 	
 	//without a list, menu will not work
 	//so we enforce a MyList at construction
-	public Menu(PersonsRepository pr) {
+	public Menu(PersonsRepository pr, SeminarRepository sr) {
 		this.pr = pr;
+		this.sr = sr;
 	}
 	
 	//Loop for continuous user interaction
 	public void show() { 
-		/* get the highest id from db so that id remains unique*/
-		BaseObject.setCounter(pr.getHighestId()+1);
 		do {
 			showMenu();
 			result = inputMenu();
@@ -44,7 +44,7 @@ public class Menu extends BaseObject{
 		System.out.println("* 5. Liste löschen    *");
 		System.out.println("* 6. Einträge zählen  *");
 		System.out.println("* 7. Person suchen    *");
-		System.out.println("* 7. Person updaten   *");
+		System.out.println("* 8. Person updaten   *");
 		System.out.println("* q: Zurück           *");
 		System.out.println("***********************");
 	}
@@ -81,11 +81,21 @@ public class Menu extends BaseObject{
 			case "8":	System.out.println("Person updaten");
 						update();
 						break;
+			case "9":	System.out.println("Seminar anlegen");		
+						inputSeminar();
+						break;
 			case "q":   break;
 			default: 	System.out.println("Falsche Eingabe.");		
 		}
 	}
 	
+	private void inputSeminar() {
+		Seminar s = new Seminar("Java for Dummies");
+		s.add(pr.get(15));
+		s.setLecturer(pr.get(16));
+		sr.create(s);
+	}
+
 	//Enter new Person
 	private void inputPerson() {				
 		Person p = new Person();
