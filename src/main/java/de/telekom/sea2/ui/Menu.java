@@ -70,7 +70,7 @@ public class Menu extends BaseObject{
 						deleteAll();
 						break;
 			case "6":	System.out.println("Anzahl der Einträge");
-						System.out.println(pr.getCount());
+						count();
 						break;
 			case "q":   break;
 			default: 	System.out.println("Falsche Eingabe.");		
@@ -134,7 +134,7 @@ public class Menu extends BaseObject{
 		scanner.nextLine();
 	}
 	
-	public void deleteAll() {
+	private void deleteAll() {
 		String confirmation = "";
 		Boolean result =false;
 		System.out.println("Sind Sie sicher? Bitte \"yes\" eingeben");
@@ -149,7 +149,7 @@ public class Menu extends BaseObject{
 		}
 	}
 	
-	public void getPerson() {
+	private void getPerson() {
 		System.out.println("Bitte Index eingeben");
 		int index = scanner.nextInt();
 		try {
@@ -161,6 +161,14 @@ public class Menu extends BaseObject{
 		scanner.nextLine();
 	}
 	
+	private void count() {
+		int i = pr.getCount();
+		if (i<0) {
+			System.out.println("Anzahl konnte nicht ermittelt werden");
+		}else {
+			System.out.println("Es gibt " + i + " Einträge.");
+		}
+	}
 	private boolean validateName(String name) {
 		return name != null && name.chars().allMatch(Character::isLetter);
 	}
