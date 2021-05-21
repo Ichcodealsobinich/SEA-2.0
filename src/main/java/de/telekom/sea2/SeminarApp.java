@@ -19,6 +19,9 @@ public class SeminarApp {
 			
 			PersonsRepository pr = new PersonsRepository(connection);
 			SeminarRepository sr = new SeminarRepository(connection,pr);
+			ParticipationRepository paR = new ParticipationRepository(connection, pr, sr);
+			pr.setPaR(paR);
+			sr.setPaR(paR);
 			Menu menu = new Menu(pr,sr);
 			menu.show();
 		}catch (Exception e) {

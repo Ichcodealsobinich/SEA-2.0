@@ -3,14 +3,25 @@ package de.telekom.sea2.model;
 import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.BaseObject;
 
-public class Person extends BaseObject{
+public class Person {
+	
+	private Long id;
 	private String firstname;
 	private String lastname;
 	private Salutation salutation;
 	
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public Salutation getSalutation() {
 		return salutation;
 	}
+	
 	public void setSalutation(Salutation anrede) {
 		this.salutation = anrede;
 	}

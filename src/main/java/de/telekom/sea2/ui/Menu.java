@@ -124,7 +124,9 @@ public class Menu extends BaseObject{
 		p.setFirstName(firstName);
 		p.setLastName(lastName);
 		p.setSalutation(salut);
-		pr.create(p);
+		Long sId = pr.create(p);
+		sr.addPersonToSeminar(pr.get(17), sId);
+		
 	}
 	
 	private void listAllPersons() {					

@@ -10,12 +10,17 @@ import de.telekom.sea2.*;
 public class PersonsRepository {
 	
 	private Connection connection;
+	private ParticipationRepository paR;
 	
 	/*Constructor with a db connection*/
 	public PersonsRepository(Connection c) {
 		this.connection = c; 
 	}
 	
+	public void setPaR(ParticipationRepository paR) {
+		this.paR = paR;
+	}
+
 	public long create(Person p) {
 		
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
@@ -55,25 +60,25 @@ public class PersonsRepository {
 			ps.setLong(1, id);
 			ps.execute();
 		} catch (Exception e) {return false;}
+		paR.unsubscribePerson(id);
 		return true;
 	}
 	
 	public boolean delete(Person p) {
-		Boolean result = false;
+
 		String sql = "DELETE FROM personen WHERE id=?";
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.setLong(1, p.getId());
-			result = ps.execute();
-		} catch (Exception e) {
-			result = false;
-		}
-		return result;
+			ps.execute();
+		} catch (Exception e) {return false;}
+		paR.unsubscribePerson(p.getId());
+		return true;
 	}
 	
 	public Person get(long id) throws NoSuchElementException{
 		
 		String query= "SELECT * FROM personen WHERE id=?";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+		try (PreparedStatement ps = this.connection.prepareStatement(query)){
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()){
 				if (rs.next()) {
@@ -86,8 +91,7 @@ public class PersonsRepository {
 				} else {
 					throw new NoSuchElementException();
 				}
-			}catch (Exception e) {throw new NoSuchElementException();}
-			
+			}catch (Exception e) {throw new NoSuchElementException();}			
 		}catch (Exception e) {throw new NoSuchElementException();}
 	}
 	
@@ -154,6 +158,7 @@ public class PersonsRepository {
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
 			ps.execute();
 		} catch (Exception e) {return false;}
+		paR.unsubscribeAll();
 		return true;
 	}
 	

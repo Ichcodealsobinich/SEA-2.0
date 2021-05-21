@@ -13,10 +13,17 @@ public class SeminarRepository {
 
 	private Connection connection;
 	private PersonsRepository pr;
+	private ParticipationRepository paR;
 	
+
+
 	public SeminarRepository(Connection c, PersonsRepository pr) {
 		this.connection = c; 
 		this.pr = pr;
+	}
+	
+	public void setPaR(ParticipationRepository paR) {
+		this.paR = paR;
 	}
 	
 	public long create(Seminar s) {		
@@ -93,25 +100,38 @@ public class SeminarRepository {
 		if (!pr.exists(p.getId())) {
 			//Person will get a new id when saving in the db
 			Long newId = pr.create(p);
-			p.setId(newId);
+			if (newId < 0) {return false;
+			}else {p.setId(newId);}
 		}
 		
 		//check if seminar exists in database and cancel if not
 		if (!this.exists(seminar_id)) {
-			System.out.println("Hier steige ich aus");
 			return false;
 		}
 		
 		//insert person_id and seminar_id into joint table
-		String sql = "INSERT INTO participates ( person_id, seminar_id) VALUES ( ?, ?)";
+		return paR.subscribe(p.getId(), seminar_id);
+	}
+
+	public boolean delete(Long id) {
+		String sql = "DELETE FROM seminars WHERE id=?";
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
-			ps.setLong(1, p.getId());
-			ps.setLong(2, seminar_id);
+			ps.setLong(1, id);
 			ps.execute();
 		} catch (Exception e) {return false;}
+		paR.unsubscribeSeminar(id);
 		return true;
 	}
 	
+	public boolean deleteAll() {
+		String sql = "DELETE FROM seminars";
+		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
+			ps.execute();
+		} catch (Exception e) {return false;}
+		paR.unsubscribeAll();
+		return true;
+	}
+
 	public boolean exists(Long id) {
 		String query = "SELECT COUNT(1) FROM seminars WHERE id= ?;";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
