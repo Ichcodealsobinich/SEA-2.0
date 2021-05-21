@@ -4,6 +4,7 @@ import de.telekom.sea2.persistence.*;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.lookup.*;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import de.telekom.sea2.*;
@@ -12,19 +13,19 @@ import de.telekom.sea2.*;
 public class Menu extends BaseObject{
 	
 	private PersonsRepository pr;
+	private SeminarRepository sr;
 	private String result;
 	private java.util.Scanner scanner = new java.util.Scanner(System.in);
 	
 	//without a list, menu will not work
 	//so we enforce a MyList at construction
-	public Menu(PersonsRepository pr) {
+	public Menu(PersonsRepository pr, SeminarRepository sr) {
 		this.pr = pr;
+		this.sr = sr;
 	}
 	
 	//Loop for continuous user interaction
 	public void show() { 
-		/* get the highest id from db so that id remains unique*/
-		BaseObject.setCounter(pr.getHighestId()+1);
 		do {
 			showMenu();
 			result = inputMenu();
@@ -39,7 +40,11 @@ public class Menu extends BaseObject{
 		System.out.println("* 1: Person anlegen   *");
 		System.out.println("* 2: Liste anzeigen   *");
 		System.out.println("* 3: Person löschen   *");
-		System.out.println("* 4. Person ausgeben  *");
+		System.out.println("* 4. Person ausgeben  *");		
+		System.out.println("* 5. Liste löschen    *");
+		System.out.println("* 6. Einträge zählen  *");
+		System.out.println("* 7. Person suchen    *");
+		System.out.println("* 8. Person updaten   *");
 		System.out.println("* q: Zurück           *");
 		System.out.println("***********************");
 	}
@@ -64,11 +69,33 @@ public class Menu extends BaseObject{
 			case "4":   System.out.println("Person ausgeben");
 						getPerson();
 						break;
+			case "5":	System.out.println("Liste löschen");
+						deleteAll();
+						break;
+			case "6":	System.out.println("Anzahl der Einträge");
+						count();
+						break;
+			case "7":	System.out.println("Person suchen");
+						search();
+						break;
+			case "8":	System.out.println("Person updaten");
+						update();
+						break;
+			case "9":	System.out.println("Seminar anlegen");		
+						inputSeminar();
+						break;
 			case "q":   break;
 			default: 	System.out.println("Falsche Eingabe.");		
 		}
 	}
 	
+	private void inputSeminar() {
+		Seminar s = new Seminar("Java for Dummies");
+		s.add(pr.get(15));
+		s.setLecturer(pr.get(16));
+		sr.create(s);
+	}
+
 	//Enter new Person
 	private void inputPerson() {				
 		Person p = new Person();
@@ -97,20 +124,20 @@ public class Menu extends BaseObject{
 		p.setFirstName(firstName);
 		p.setLastName(lastName);
 		p.setSalutation(salut);
-		pr.create(p);
+		Long sId = pr.create(p);
+		sr.addPersonToSeminar(pr.get(17), sId);
+		
 	}
 	
 	private void listAllPersons() {					
 		try {
-			Person[] list = pr.getAll();
+			ArrayList<Person> list = pr.getAll();
 			System.out.println("---Die aktuelle Liste sieht so aus:---");
-			if (list.length==0) {
+			if (list.size()==0) {
 				System.out.println("Die Liste ist leer");
 			} else {
-				for (int i=0;i<list.length;i++) {
-					if (list[i] != null) {
-						System.out.println(list[i].toString());
-					}
+				for (Person p : list) {
+					System.out.println(p.toString());
 				}
 			}
 		}catch (Exception e) {System.out.println("Das hat leider nicht geklappt");}
@@ -126,8 +153,23 @@ public class Menu extends BaseObject{
 		scanner.nextLine();
 	}
 	
-	public void getPerson() {
-		System.out.println("Bitte Index eingeben");
+	private void deleteAll() {
+		String confirmation = "";
+		Boolean result =false;
+		System.out.println("Sind Sie sicher? Bitte \"yes\" eingeben");
+		confirmation = scanner.nextLine().trim();
+		if (confirmation.toUpperCase().equals("YES")) {
+			result = pr.deleteAll();
+			if (result) {
+				System.out.println("Alle Einträge erfolgreich gelöscht");
+			} else {
+				System.out.println("Leider ist etwas schiefgegangen");
+			}
+		}
+	}
+	
+	private void getPerson() {
+		System.out.println("Bitte Id eingeben");
 		int index = scanner.nextInt();
 		try {
 			Person p = pr.get(index);
@@ -138,39 +180,71 @@ public class Menu extends BaseObject{
 		scanner.nextLine();
 	}
 	
+	private void count() {
+		int i = pr.getCount();
+		if (i<0) {
+			System.out.println("Anzahl konnte nicht ermittelt werden");
+		}else {
+			System.out.println("Es gibt " + i + " Einträge.");
+		}
+	}
+	
+	private void search() {
+		String firstname ="";
+		String lastname = "";
+		ArrayList<Person> list = new ArrayList<Person>();
+		System.out.println("Bitte Vornamen eingeben oder Enter zum überspringen");
+		firstname = scanner.nextLine().trim();
+		System.out.println("Bitte Nachnamen eingeben");
+		lastname = scanner.nextLine().trim();
+		if (firstname.equals("")) {
+			list = pr.find(lastname);
+		}else {
+			list = pr.find(firstname, lastname);
+		}
+		if (list.size()>0) {
+			System.out.println("Es wurden " + list.size() + " Einträge gefunden:");
+			for (Person person : list) {
+				System.out.println(person.toString());
+			}
+		}else {
+			System.out.println("Es wurden keine Einträge gefunden:");
+		}
+	}
+	
+	private void update() {
+		int id = 0;
+		System.out.println("Bitte Id eingeben");
+		id = scanner.nextInt();
+		scanner.nextLine();
+		System.out.println("Bitte Anrede eingeben");
+		Salutation salutation = Salutation.fromString(scanner.nextLine().trim());
+		System.out.println("Bitte Vorname eingeben");
+		String firstname = scanner.nextLine().trim();
+		if (!validateName(firstname)) {
+			System.out.println("Kein gültiger Vorname - breche ab");
+			return;
+		}
+		System.out.println("Bitte Vorname eingeben");
+		String lastname = scanner.nextLine().trim();
+		if (!validateName(lastname)) {
+			System.out.println("Kein gültiger Nachname - breche ab");
+			return;
+		}
+		Person p = new Person();
+		p.setId((long) id);
+		p.setSalutation(salutation);
+		p.setFirstName(firstname);
+		p.setLastName(lastname);
+		if (!pr.update(p)) {
+			System.out.println("Das hat leider nicht geklappt");
+		}else {
+			System.out.println("Person mit Id " + id + " erfolgreich geändert");
+		}
+	}
+	
 	private boolean validateName(String name) {
-		if (name.contains("\\"))return false;
-		if (name.contains("/")) return false;
-		if (name.contains("\""))return false;
-		if (name.contains("§")) return false;
-		if (name.contains("$")) return false;
-		if (name.contains("!")) return false;
-		if (name.contains("&")) return false;
-		if (name.contains("(")) return false;
-		if (name.contains(")")) return false;
-		if (name.contains("[")) return false;
-		if (name.contains("]")) return false;
-		if (name.contains("{")) return false;
-		if (name.contains("}")) return false;
-		if (name.contains("+")) return false;
-		if (name.contains("#")) return false;
-		if (name.contains(",")) return false;
-		if (name.contains(";")) return false;
-		if (name.contains(".")) return false;
-		if (name.contains(":")) return false;
-		if (name.contains("<")) return false;
-		if (name.contains(">")) return false;
-		if (name.contains("1")) return false;
-		if (name.contains("2")) return false;
-		if (name.contains("3")) return false;
-		if (name.contains("4")) return false;
-		if (name.contains("5")) return false;
-		if (name.contains("6")) return false;
-		if (name.contains("7")) return false;
-		if (name.contains("8")) return false;
-		if (name.contains("9")) return false;
-		if (name.contains("0")) return false;
-		return true;
+		return name != null && name.chars().allMatch(Character::isLetter);
 	}
 	
 	public void close() {
