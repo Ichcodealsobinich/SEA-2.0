@@ -7,12 +7,21 @@ import java.util.NoSuchElementException;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.*;
 
+/** 
+ * A helper class to manage persons in a database.
+ * Needs a database connection to work. 
+ * 
+ * @author sea4
+ *
+ */
 public class PersonsRepository {
 	
 	private Connection connection;
 	private ParticipationRepository paR;
 	
-	/*Constructor with a db connection*/
+	/**
+	 * Constructor with a db connection
+	 */
 	public PersonsRepository(Connection c) {
 		this.connection = c; 
 	}
@@ -21,6 +30,12 @@ public class PersonsRepository {
 		this.paR = paR;
 	}
 
+	/**
+	 * This method saves a person in the database.
+	 * It will change the id to ensure it's unique.
+	 * @param p A reference to an instance of the person class.
+	 * @return Returns the (new) id of the saved person or -1 in case of error.
+	 */
 	public long create(Person p) {
 		
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
@@ -37,22 +52,28 @@ public class PersonsRepository {
 	
 	public boolean update(Person p) {
 		String sql = "UPDATE personen "
-				+ "SET ID=?, "
 				+ "ANREDE=?, "
 				+ "VORNAME=?, "
 				+ "NACHNAME=? "
 				+ "WHERE ID=?;";		
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
-			ps.setLong(1, p.getId());
-			ps.setByte(2, p.getSalutation().toByte());
-			ps.setString(3, p.getFirstname());
-			ps.setString(4, p.getLastname());
-			ps.setLong(5, p.getId());
+			ps.setByte(1, p.getSalutation().toByte());
+			ps.setString(2, p.getFirstname());
+			ps.setString(3, p.getLastname());
+			ps.setLong(4, p.getId());
 			ps.execute();
 		} catch (Exception e) {return false;}
 		return true;
 	}
 	
+	/**
+	 * Removes a person from the database.
+	 * Returns false in case of an error.
+	 * This method also tries to unsubscribe the person from all seminars,
+	 * but does not check if that worked. 
+	 * @param id is the id of the person to delete.
+	 * @return Returns true if no error occurred.
+	 */
 	public boolean delete(long id) {
 		
 		String sql = "DELETE FROM personen WHERE id=?";
@@ -64,6 +85,14 @@ public class PersonsRepository {
 		return true;
 	}
 	
+	/**
+	 * Removes a person from the database.
+	 * Returns false in case of an error.
+	 * This method also tries to unsubscribe the person from all seminars,
+	 * but does not check if that worked. 
+	 * @param p is a reference to the person to delete. 
+	 * @return Returns true if no error occurred.
+	 */
 	public boolean delete(Person p) {
 
 		String sql = "DELETE FROM personen WHERE id=?";
@@ -162,6 +191,10 @@ public class PersonsRepository {
 		return true;
 	}
 	
+	/**
+	 * Gets the number of persons saved in the database
+	 * @return the number of persons saved in the database. Returns -1 in case of error.
+	 */
 	public int getCount() {
 		String query= "SELECT COUNT(*) FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
@@ -169,10 +202,7 @@ public class PersonsRepository {
 				rs.next();
 				return rs.getInt(1);
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			return -1;
-		}	
+		}catch (Exception e) {return -1;}	
 	}
 	
 	public boolean exists(Long id) {
@@ -201,6 +231,7 @@ public class PersonsRepository {
 		}catch (Exception e){}
 		return id;
 	}
+	
 	private long getNewUniqueId() {
 		return getHighestId() +1;
 	}
