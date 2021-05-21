@@ -244,6 +244,7 @@ public class Menu extends BaseObject{
 	}
 	
 	private boolean validateName(String name) {
+		if (name.length()<1 || name.length()>40) {return false;}
 		return name != null && name.chars().allMatch(Character::isLetter);
 	}
 	

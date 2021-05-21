@@ -38,9 +38,10 @@ public class PersonsRepository {
 	 */
 	public long create(Person p) {
 		
+		if (p==null) {return -1;}
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
-		p.setId(getNewUniqueId());
 		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
+			p.setId(getNewUniqueId());
 			ps.setLong(1, p.getId());
 			ps.setByte(2, p.getSalutation().toByte());
 			ps.setString(3, p.getFirstname());
@@ -51,6 +52,8 @@ public class PersonsRepository {
 	}
 	
 	public boolean update(Person p) {
+		
+		if (p==null) {return false;}
 		String sql = "UPDATE personen "
 				+ "ANREDE=?, "
 				+ "VORNAME=?, "
