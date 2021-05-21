@@ -3,6 +3,12 @@ package de.telekom.sea2.model;
 import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.BaseObject;
 
+/**
+ * Represents basic information about a Person.
+ * With id, firstname, lastname and salutation.
+ * @author sea4
+ *
+ */
 public class Person {
 	
 	private Long id;
@@ -72,11 +78,19 @@ public class Person {
 		return clone;
 	}
 	
+	/**
+	 * Returns id, salutation, firstname and lastname in a neatly formatted string
+	 */
 	@Override
 	public String toString() {
-		return "Id: " + getId() + " " + salutation + " " + firstname + " " + lastname;
+		return "Id: " + id + " " + salutation + " " + firstname + " " + lastname;
 	}
 	
+	/** 
+	 * Validate a name. Returns true, if the name consists only of letters.
+	 * @param name to be validated. Can be firstname or lastame.
+	 * @return True, if all characters in the name are letters. Otherwise false.
+	 */
 	public boolean isValidName(final String name) {
 		return name != null && name.chars().allMatch(Character::isLetter);
 	}

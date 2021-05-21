@@ -2,6 +2,11 @@ package de.telekom.sea2.model;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a seminar, including an id, a name, a lecturer and a list of participants
+ * @author sea4
+ *
+ */
 public class Seminar {
 	private long id;
 
