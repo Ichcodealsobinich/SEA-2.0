@@ -219,23 +219,17 @@ public class PersonsRepository {
 			}catch (Exception e) {return false;}
 		} catch (Exception e) {return false;}
 	}
-	
-	private long getHighestId() {
+		
+	private long getNewUniqueId() {
 		long id = 0;
-		String query= "SELECT * FROM personen";
+		String query= "SELECT MAX (id) FROM personen";
 		try (PreparedStatement ps = this.connection.prepareStatement(query);){
 			try (ResultSet rs = ps.executeQuery()){
-				while (rs.next()) {
-					if (rs.getLong(1)>id) {
-						id=rs.getLong(1);
-					}
+				if (rs.next()) {
+					id=rs.getLong(1);
 				}
-			}catch (Exception e) {System.out.println("Problem with rs");};
-		}catch (Exception e){}
-		return id;
-	}
-	
-	private long getNewUniqueId() {
-		return getHighestId() +1;
+			}catch (Exception e) {return 0;};
+		}catch (Exception e){return 0;}
+		return id+1;
 	}
 }
