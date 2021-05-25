@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import de.telekom.sea2.model.*;
-import de.telekom.sea2.*;
 
 /** 
  * A helper class to manage persons in a database.
@@ -14,16 +13,12 @@ import de.telekom.sea2.*;
  * @author sea4
  *
  */
-public class PersonsRepository {
+public class PersonsRepository extends Repository {
 	
-	private Connection connection;
 	private ParticipationRepository paR;
 	
-	/**
-	 * Constructor with a db connection
-	 */
-	public PersonsRepository(Connection c) {
-		this.connection = c; 
+	public PersonsRepository(Connection c, String tableName) {
+		super(c, tableName);
 	}
 	
 	public void setPaR(ParticipationRepository paR) {
@@ -40,7 +35,7 @@ public class PersonsRepository {
 		
 		if (p==null) {return -1;}
 		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
-		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			p.setId(getNewUniqueId());
 			ps.setLong(1, p.getId());
 			ps.setByte(2, p.getSalutation().toByte());
@@ -59,7 +54,7 @@ public class PersonsRepository {
 				+ "VORNAME=?, "
 				+ "NACHNAME=? "
 				+ "WHERE ID=?;";		
-		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			ps.setByte(1, p.getSalutation().toByte());
 			ps.setString(2, p.getFirstname());
 			ps.setString(3, p.getLastname());
@@ -79,12 +74,11 @@ public class PersonsRepository {
 	 */
 	public boolean delete(long id) {
 		
-		String sql = "DELETE FROM personen WHERE id=?";
-		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
-			ps.setLong(1, id);
-			ps.execute();
-		} catch (Exception e) {return false;}
-		paR.unsubscribePerson(id);
+		if (super.delete(id)) {
+			paR.unsubscribePerson(id);
+		} else {
+			return false;
+		}		
 		return true;
 	}
 	
@@ -97,20 +91,18 @@ public class PersonsRepository {
 	 * @return Returns true if no error occurred.
 	 */
 	public boolean delete(Person p) {
-
-		String sql = "DELETE FROM personen WHERE id=?";
-		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
-			ps.setLong(1, p.getId());
-			ps.execute();
-		} catch (Exception e) {return false;}
-		paR.unsubscribePerson(p.getId());
+		if (super.delete(p.getId())) {
+			paR.unsubscribePerson(p.getId());
+		} else {
+			return false;
+		}		
 		return true;
 	}
 	
 	public Person get(long id) throws NoSuchElementException{
 		
 		String query= "SELECT * FROM personen WHERE id=?";
-		try (PreparedStatement ps = this.connection.prepareStatement(query)){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(query)){
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()){
 				if (rs.next()) {
@@ -130,7 +122,7 @@ public class PersonsRepository {
 	public ArrayList<Person> getAll() throws Exception{
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
 			try (ResultSet rs = ps.executeQuery()){				
 				/*iterate through result and write into ArrayList*/
 				while (rs.next()) {
@@ -149,7 +141,7 @@ public class PersonsRepository {
 	public ArrayList<Person> find(String firstname, String lastname) {
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen WHERE vorname LIKE ? AND nachname LIKE ?";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
 			ps.setString(1, firstname);
 			ps.setString(2, lastname);
 			try (ResultSet rs = ps.executeQuery()){
@@ -169,7 +161,7 @@ public class PersonsRepository {
 	public ArrayList<Person> find(String lastname) {
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen WHERE nachname LIKE ?";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
+		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
 			ps.setString(1, lastname);
 			try (ResultSet rs = ps.executeQuery()){
 				while (rs.next()) {
@@ -183,53 +175,6 @@ public class PersonsRepository {
 			}catch (Exception e) {}
 		}catch (Exception e) {}
 		return list;
-	}
-	
-	public boolean deleteAll() {
-		String sql = "DELETE FROM personen";
-		try (PreparedStatement ps = this.connection.prepareStatement(sql);){
-			ps.execute();
-		} catch (Exception e) {return false;}
-		paR.unsubscribeAll();
-		return true;
-	}
-	
-	/**
-	 * Gets the number of persons saved in the database
-	 * @return the number of persons saved in the database. Returns -1 in case of error.
-	 */
-	public int getCount() {
-		String query= "SELECT COUNT(*) FROM personen";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
-			try (ResultSet rs = ps.executeQuery()){
-				rs.next();
-				return rs.getInt(1);
-			}
-		}catch (Exception e) {return -1;}	
-	}
-	
-	public boolean exists(Long id) {
-		String query = "SELECT COUNT(1) FROM personen WHERE id= ?;";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
-			ps.setLong(1, id);
-			try (ResultSet rs = ps.executeQuery()){
-				rs.next();
-				if (rs.getLong(1) == 1) {return true;}
-				else {return false;}
-			}catch (Exception e) {return false;}
-		} catch (Exception e) {return false;}
-	}
-		
-	private long getNewUniqueId() {
-		long id = 0;
-		String query= "SELECT MAX (id) FROM personen";
-		try (PreparedStatement ps = this.connection.prepareStatement(query);){
-			try (ResultSet rs = ps.executeQuery()){
-				if (rs.next()) {
-					id=rs.getLong(1);
-				}
-			}catch (Exception e) {return 0;};
-		}catch (Exception e){return 0;}
-		return id+1;
-	}
+	}		
+
 }

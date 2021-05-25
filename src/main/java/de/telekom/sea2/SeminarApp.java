@@ -17,13 +17,17 @@ public class SeminarApp {
 		try (Connection connection = DriverManager
 				.getConnection("jdbc:mariadb://localhost:3306/seadb?user=seauser&password=seapass");){
 			
-			PersonsRepository pr = new PersonsRepository(connection);
-			SeminarRepository sr = new SeminarRepository(connection,pr);
+			PersonsRepository pr = new PersonsRepository(connection, "personen");
+			SeminarRepository sr = new SeminarRepository(connection, "seminars");
 			ParticipationRepository paR = new ParticipationRepository(connection, pr, sr);
 			pr.setPaR(paR);
+			
 			sr.setPaR(paR);
-			Menu menu = new Menu(pr,sr);
-			menu.show();
+			sr.setPr(pr);
+			try (Menu menu = new Menu(pr,sr)){
+				menu.show();
+			} catch (Exception e) {System.out.println("Something went wrong");}		
+			
 		}catch (Exception e) {
 			System.out.println("Could not establish database connection. Shutting down.");
 			e.printStackTrace();
