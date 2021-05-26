@@ -123,7 +123,7 @@ public class PersonsRepository extends Repository {
 		}catch (Exception e) {throw new NoSuchElementException();}
 	}
 	
-	public ArrayList<Person> getAll() throws Exception{
+	public ArrayList<Person> getAll() {
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
@@ -137,12 +137,10 @@ public class PersonsRepository extends Repository {
 					person.setLastName(rs.getString(4));
 					person.setBirthdate(rs.getDate(5));
 					list.add(person);
-				}
-				return list;
-			}catch (Exception e) {
-				e.printStackTrace();
-				throw e;}			
-		}catch (Exception e) {throw e;}
+				}				
+			}catch (Exception e) {}			
+		}catch (Exception e) {}
+		return list;
 	}
 	
 	public ArrayList<Person> find(String firstname, String lastname) {
