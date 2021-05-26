@@ -1,6 +1,11 @@
 package de.telekom.sea2.model;
 
 import de.telekom.sea2.validation.*;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
+
 import de.telekom.sea2.lookup.Salutation;
 
 /**
@@ -15,7 +20,38 @@ public class Person {
 	private String firstname;
 	private String lastname;
 	private Salutation salutation;
+	private LocalDate birthdate;
 	
+
+
+	public LocalDate getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(LocalDate birthdate) {
+		if (birthdate == null) {
+			this.birthdate=LocalDate.parse("1900-01-01");
+		} else {
+			this.birthdate = birthdate;
+		}
+	}
+
+	public void setBirthdate(Date birthdate) {
+		if (birthdate == null) {
+			this.birthdate=LocalDate.parse("1900-01-01");
+		} else {
+			this.birthdate = birthdate.toLocalDate();
+		} 
+	}
+	
+	public void setBirthdate(String birthdate) {
+		try {
+			this.birthdate=LocalDate.parse(birthdate);
+		} catch (Exception e) {
+			this.birthdate = LocalDate.parse("1900-01-01");
+		} 
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -53,12 +89,13 @@ public class Person {
 		this.setFirstName("");
 		this.setLastName("");
 		this.setSalutation(Salutation.OTHER);
+		this.setBirthdate(LocalDate.parse("1900-01-01"));
 	}
 	//constructor with parameters
 	public Person(final String vn, final String nn, final String salutation) {
-		if (this.isValidName(vn)) {this.setFirstName(vn);}
+		if (Person.isValidName(vn)) {this.setFirstName(vn);}
 		else {this.setFirstName("");}
-		if (this.isValidName(nn)) {this.setLastName(nn);}
+		if (Person.isValidName(nn)) {this.setLastName(nn);}
 		else {this.setLastName("");}
 		this.salutation = Salutation.fromString(salutation);
 	}
@@ -66,8 +103,9 @@ public class Person {
 	public boolean equals(final Person p) {
 		return  	(super.equals(p)) && 
 					(this.getSalutation()==p.getSalutation()) &&	
-					(this.getFirstname()==p.getFirstname()) && 
-					(this.getLastname()==p.getLastname());
+					(this.getFirstname().equals(p.getFirstname())) && 
+					(this.getLastname().equals(p.getLastname())) &&
+					(this.getBirthdate().equals(p.getBirthdate()));
 	}
 	
 	public Person clone() {
@@ -75,15 +113,22 @@ public class Person {
 		clone.setFirstName(this.getFirstname());
 		clone.setLastName(this.getLastname());
 		clone.setSalutation(this.getSalutation());
+		clone.setBirthdate(this.getBirthdate());
 		return clone;
 	}
 	
 	/**
-	 * Returns id, salutation, firstname and lastname in a neatly formatted string
+	 * Returns id, salutation, firstname, lastname and age in a neatly formatted string
 	 */
 	@Override
 	public String toString() {
-		return "Id: " + id + " " + salutation + " " + firstname + " " + lastname;
+		String ret = String.format("Id: %s %s %s %s, %s", 
+				id, 
+				salutation, 
+				firstname, 
+				lastname, 
+				Period.between(birthdate,  LocalDate.now()).getYears());
+		return ret;
 	}
 	
 	/** 
