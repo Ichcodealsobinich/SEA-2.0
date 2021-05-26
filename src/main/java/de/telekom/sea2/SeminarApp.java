@@ -11,7 +11,9 @@ public class SeminarApp {
 		try {
 			final String DRIVER = "org.mariadb.jdbc.Driver";
 			Class.forName(DRIVER);
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (ClassNotFoundException e) {
+			System.out.println("Klasse \"org.mariadb.jdbc.Driver\" nicht gefunden");
+		}
 		
 		/*establish database connection*/
 		try (Connection connection = DriverManager
@@ -26,9 +28,9 @@ public class SeminarApp {
 			sr.setPr(pr);
 			try (Menu menu = new Menu(pr,sr)){
 				menu.show();
-			} catch (Exception e) {System.out.println("Something went wrong");}		
+			} catch (Exception e) {System.out.println("Something went wrong. Shutting down.");}		
 			
-		}catch (Exception e) {
+		}catch (SQLException e) {
 			System.out.println("Could not establish database connection. Shutting down.");
 			e.printStackTrace();
 		}		

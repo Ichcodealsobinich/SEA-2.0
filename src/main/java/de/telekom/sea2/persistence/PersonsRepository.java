@@ -154,7 +154,7 @@ public class PersonsRepository extends Repository {
 					list.add(person);
 				}
 			}catch (Exception e) {}
-		}catch (Exception e) {}
+		}catch (Exception e) {}		
 		return list;
 	}
 	

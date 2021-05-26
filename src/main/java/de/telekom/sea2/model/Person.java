@@ -1,5 +1,6 @@
 package de.telekom.sea2.model;
 
+import de.telekom.sea2.validation.*;
 import de.telekom.sea2.lookup.Salutation;
 
 /**
@@ -90,8 +91,9 @@ public class Person {
 	 * @param name to be validated. Can be firstname or lastame.
 	 * @return True, if all characters in the name are letters. Otherwise false.
 	 */
-	public boolean isValidName(final String name) {
+	public static boolean isValidName(final String name) {
 		if (name.length()<1 || name.length()>40) {return false;}
-		return name != null && name.chars().allMatch(Character::isLetter);
+		//return name != null && name.chars().allMatch(Character::isLetter);
+		return name != null && name.chars().allMatch(NamePredicates::isAllowedInNames);		
 	}
 }

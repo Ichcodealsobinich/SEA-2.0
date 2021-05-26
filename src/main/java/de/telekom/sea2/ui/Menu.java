@@ -1,6 +1,7 @@
 package de.telekom.sea2.ui;
 
 import de.telekom.sea2.persistence.*;
+import de.telekom.sea2.validation.NamePredicates;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.lookup.*;
 
@@ -109,17 +110,16 @@ public class Menu extends BaseObject implements AutoCloseable{
 		
 		System.out.println("Bitte einen Vornamen eingeben");
 		firstName = scanner.nextLine();
-		if (!validateName(firstName)) {
+		if (!Person.isValidName(firstName)) {
 			System.out.println("Der Name ist ungültig - breche ab");
 			return;
 		}
 		
 		System.out.println("Bitte einen Nachnamen eingeben");
 		lastName = scanner.nextLine();
-		if (!validateName(lastName)) {
+		if (!Person.isValidName(lastName)) {
 			System.out.println("Der Name ist ungültig - breche ab");
-			return;
-			
+			return;			
 		}		
 		p.setFirstName(firstName);
 		p.setLastName(lastName);
