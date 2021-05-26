@@ -1,7 +1,6 @@
 package de.telekom.sea2.model;
 
 import de.telekom.sea2.lookup.Salutation;
-import de.telekom.sea2.BaseObject;
 
 /**
  * Represents basic information about a Person.

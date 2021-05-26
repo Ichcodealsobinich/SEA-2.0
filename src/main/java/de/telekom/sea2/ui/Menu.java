@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import de.telekom.sea2.*;
 
 
-public class Menu extends BaseObject{
+public class Menu extends BaseObject implements AutoCloseable{
 	
 	private PersonsRepository pr;
 	private SeminarRepository sr;
