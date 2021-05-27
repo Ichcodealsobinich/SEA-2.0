@@ -1,14 +1,12 @@
 package de.telekom.sea2.ui;
 
 import de.telekom.sea2.persistence.*;
-import de.telekom.sea2.validation.NamePredicates;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.lookup.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 import de.telekom.sea2.*;
 
@@ -94,8 +92,10 @@ public class Menu extends BaseObject implements AutoCloseable{
 	
 	private void inputSeminar() {
 		Seminar s = new Seminar("Java for Dummies");
-		s.add(pr.get(15));
-		s.setLecturer(pr.get(16));
+		Result<Person> result = pr.get(15);
+		if (!result.isEmpty()) {s.add(result.unwrap());}
+		result = pr.get(16);
+		if (!result.isEmpty()) {s.setLecturer(result.unwrap());}
 		sr.create(s);
 	}
 
@@ -136,8 +136,7 @@ public class Menu extends BaseObject implements AutoCloseable{
 		p.setLastName(lastName);
 		p.setSalutation(salut);
 		p.setBirthdate(birthdate);
-		Long sId = pr.create(p);
-		sr.addPersonToSeminar(pr.get(17), sId);
+		if (pr.create(p)<0) {System.out.println("Das hat leider nicht geklappt");}
 		
 	}
 	
@@ -186,10 +185,10 @@ public class Menu extends BaseObject implements AutoCloseable{
 	private void getPerson() {
 		System.out.println("Bitte Id eingeben");
 		int index = scanner.nextInt();
-		try {
-			Person p = pr.get(index);
-			System.out.println("Index: "+ index + ", " +p.toString());
-		} catch (NoSuchElementException e) {
+		Result<Person> result = pr.get(index);
+		if (!result.isEmpty()) {
+			System.out.println("Index: "+ index + ", " +result.unwrap().toString());
+		} else {
 			System.out.println("Person nicht gefunden");
 		}
 		scanner.nextLine();

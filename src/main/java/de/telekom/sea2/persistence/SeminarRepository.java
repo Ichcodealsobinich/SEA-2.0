@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.NoSuchElementException;
 
 import de.telekom.sea2.model.Person;
+import de.telekom.sea2.model.Result;
 import de.telekom.sea2.model.Seminar;
 
 public class SeminarRepository extends Repository{
@@ -29,8 +30,8 @@ public class SeminarRepository extends Repository{
 		this.paR = paR;
 	}
 	
-	public long create(Seminar s) {		
-		String sql = "INSERT INTO seminars ( ID, NAME, LECTURER) VALUES ( ?, ?, ?)";
+	public long create(Seminar s) {	
+		String sql = String.format("INSERT INTO %s ( ID, NAME, LECTURER) VALUES ( ?, ?, ?)", getTableName());
 		try (PreparedStatement ps = getConnection().prepareStatement(sql);){
 			s.setId(getNewUniqueId());
 			ps.setLong(1, s.getId());
@@ -48,7 +49,7 @@ public class SeminarRepository extends Repository{
 	}
 	
 	public Seminar get(Long id) {
-		String query= "SELECT * FROM seminars WHERE id=?";
+		String query= String.format("SELECT * FROM %s WHERE id=?", getTableName());
 		Long lecturer_id;
 		Seminar seminar = new Seminar();
 		
@@ -67,8 +68,11 @@ public class SeminarRepository extends Repository{
 		}catch (Exception e) {throw new NoSuchElementException();}
 		
 		//getLecturer
-		Person lecturer = pr.get(lecturer_id);
-		seminar.setLecturer(lecturer);
+		Result<Person>  result = pr.get(lecturer_id);
+		if (!result.isEmpty()) {
+			Person lecturer = result.unwrap();
+			seminar.setLecturer(lecturer);
+		}
 		
 		//get all Participants
 		query = "    SELECT *"

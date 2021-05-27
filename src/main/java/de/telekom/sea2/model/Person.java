@@ -71,10 +71,10 @@ public class Person {
 		this.salutation = Salutation.fromByte(b);
 	}
 	public void setFirstName(final String vn) {
-		if (this.isValidName(vn)) {this.firstname = vn;}
+		if (Person.isValidName(vn)) {this.firstname = vn;}
 	}
 	public void setLastName(final String nn) {
-		if (this.isValidName(nn)) {this.lastname=nn;}
+		if (Person.isValidName(nn)) {this.lastname=nn;}
 	}
 
 	public String getFirstname() {

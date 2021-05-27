@@ -34,7 +34,7 @@ public class PersonsRepository extends Repository {
 	public long create(Person p) {
 		
 		if (p==null) {return -1;}
-		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME, BIRTHDATE) VALUES ( ?, ?, ?, ?, ? )";
+		String sql = String.format("INSERT INTO %s ( ID, ANREDE, VORNAME, NACHNAME, BIRTHDATE) VALUES ( ?, ?, ?, ?, ? )", getTableName());
 		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			p.setId(getNewUniqueId());
 			ps.setLong(1, p.getId());
@@ -50,12 +50,12 @@ public class PersonsRepository extends Repository {
 	public boolean update(Person p) {
 		
 		if (p==null) {return false;}
-		String sql = "UPDATE personen "
+		String sql = String.format("UPDATE %s "
 				+ "ANREDE=?, "
 				+ "VORNAME=?, "
 				+ "NACHNAME=?, "
 				+ "BIRTHDATE=?"
-				+ "WHERE ID=?;";		
+				+ "WHERE ID=?;",getTableName());		
 		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			ps.setByte(1, p.getSalutation().toByte());
 			ps.setString(2, p.getFirstname());
@@ -102,9 +102,9 @@ public class PersonsRepository extends Repository {
 		return true;
 	}
 	
-	public Person get(long id) throws NoSuchElementException{
+	public Result<Person> get(long id) throws NoSuchElementException{
 		
-		String query= "SELECT * FROM personen WHERE id=?";
+		String query= String.format("SELECT * FROM %s WHERE id=?",getTableName());
 		try (PreparedStatement ps = this.getConnection().prepareStatement(query)){
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()){
@@ -115,12 +115,12 @@ public class PersonsRepository extends Repository {
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
 					person.setBirthdate(rs.getDate(5));
-					return person;
+					return new Result<Person>(person);
 				} else {
-					throw new NoSuchElementException();
+					return Result.none;
 				}
-			}catch (Exception e) {throw new NoSuchElementException();}			
-		}catch (Exception e) {throw new NoSuchElementException();}
+			}catch (Exception e) {return Result.none;}			
+		}catch (Exception e) {return Result.none;}
 	}
 	
 	public ArrayList<Person> getAll() {
@@ -145,7 +145,7 @@ public class PersonsRepository extends Repository {
 	
 	public ArrayList<Person> find(String firstname, String lastname) {
 		ArrayList<Person> list = new ArrayList<Person>();
-		String query= "SELECT * FROM personen WHERE vorname LIKE ? AND nachname LIKE ?";
+		String query= String.format("SELECT * FROM %s WHERE vorname LIKE ? AND nachname LIKE ?",getTableName());
 		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
 			ps.setString(1, firstname);
 			ps.setString(2, lastname);
@@ -166,7 +166,7 @@ public class PersonsRepository extends Repository {
 	
 	public ArrayList<Person> find(String lastname) {
 		ArrayList<Person> list = new ArrayList<Person>();
-		String query= "SELECT * FROM personen WHERE nachname LIKE ?";
+		String query= String.format("SELECT * FROM %s WHERE nachname LIKE ?",getTableName());
 		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
 			ps.setString(1, lastname);
 			try (ResultSet rs = ps.executeQuery()){
