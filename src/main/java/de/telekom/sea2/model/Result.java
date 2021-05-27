@@ -1,5 +1,7 @@
 package de.telekom.sea2.model;
 
+import java.util.function.Consumer;
+
 public class Result <T> {
 	private T data;
 
@@ -20,6 +22,14 @@ public class Result <T> {
 	private Result(){
 		this.data=null;
 	}
+	
+	public void ifNotEmpty(Consumer action) {
+		if (!isEmpty()) {
+			action.accept(data);
+		}
+	}
+	
+	
 	
 	
 }

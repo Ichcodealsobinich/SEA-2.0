@@ -186,11 +186,7 @@ public class Menu extends BaseObject implements AutoCloseable{
 		System.out.println("Bitte Id eingeben");
 		int index = scanner.nextInt();
 		Result<Person> result = pr.get(index);
-		if (!result.isEmpty()) {
-			System.out.println("Index: "+ index + ", " +result.unwrap().toString());
-		} else {
-			System.out.println("Person nicht gefunden");
-		}
+		result.ifNotEmpty(Person -> System.out.println(Person));
 		scanner.nextLine();
 	}
 	
