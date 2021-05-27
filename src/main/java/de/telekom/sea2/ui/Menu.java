@@ -1,9 +1,12 @@
 package de.telekom.sea2.ui;
 
 import de.telekom.sea2.persistence.*;
+import de.telekom.sea2.validation.NamePredicates;
 import de.telekom.sea2.model.*;
 import de.telekom.sea2.lookup.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -101,6 +104,7 @@ public class Menu extends BaseObject implements AutoCloseable{
 		Person p = new Person();
 		String firstName;
 		String lastName;
+		String birthdate;
 		Salutation salut;
 		
 		System.out.println("Bitte eine Anrede eingeben");
@@ -109,21 +113,29 @@ public class Menu extends BaseObject implements AutoCloseable{
 		
 		System.out.println("Bitte einen Vornamen eingeben");
 		firstName = scanner.nextLine();
-		if (!validateName(firstName)) {
+		if (!Person.isValidName(firstName)) {
 			System.out.println("Der Name ist ungültig - breche ab");
 			return;
 		}
 		
 		System.out.println("Bitte einen Nachnamen eingeben");
 		lastName = scanner.nextLine();
-		if (!validateName(lastName)) {
+		if (!Person.isValidName(lastName)) {
 			System.out.println("Der Name ist ungültig - breche ab");
-			return;
-			
-		}		
+			return;			
+		}
+		System.out.println("Bitte ein  Geburtsdatum eingeben (Format: yyyy-mm-dd)");
+		birthdate = scanner.nextLine();
+		try {
+			LocalDate.parse(birthdate);
+		} catch (DateTimeParseException e) {
+			System.out.println("Ungültiges Datum. Breche ab.");
+			return;	
+		}
 		p.setFirstName(firstName);
 		p.setLastName(lastName);
 		p.setSalutation(salut);
+		p.setBirthdate(birthdate);
 		Long sId = pr.create(p);
 		sr.addPersonToSeminar(pr.get(17), sId);
 		
@@ -140,7 +152,10 @@ public class Menu extends BaseObject implements AutoCloseable{
 					System.out.println(p.toString());
 				}
 			}
-		}catch (Exception e) {System.out.println("Das hat leider nicht geklappt");}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Das hat leider nicht geklappt");
+		}
 	}
 	
 	private void removePerson() {

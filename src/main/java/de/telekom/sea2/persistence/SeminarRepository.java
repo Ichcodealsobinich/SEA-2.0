@@ -78,9 +78,7 @@ public class SeminarRepository extends Repository{
 				+ "               WHERE seminar_id = ?";		
 		try (PreparedStatement ps = getConnection().prepareStatement(query);){
 			ps.setLong(1, id);			
-			try (ResultSet rs = ps.executeQuery()){
-								
-				
+			try (ResultSet rs = ps.executeQuery()){				
 				/*iterate through result and write into ArrayList*/
 				while (rs.next()) {
 					Person person = new Person();
@@ -96,6 +94,11 @@ public class SeminarRepository extends Repository{
 	}
 
 	public boolean addPersonToSeminar(Person p, Long seminar_id) {
+		
+		//check if seminar exists in database and cancel if not
+		if (!this.exists(seminar_id)) {
+			return false;
+		}
 		//check if persons exists in database
 		//and create it if not
 		if (!pr.exists(p.getId())) {
@@ -106,13 +109,7 @@ public class SeminarRepository extends Repository{
 			} else {
 				p.setId(newId);
 			}
-		}
-		
-		//check if seminar exists in database and cancel if not
-		if (!this.exists(seminar_id)) {
-			return false;
-		}
-		
+		}			
 		//insert person_id and seminar_id into joint table
 		return paR.subscribe(p.getId(), seminar_id);
 	}

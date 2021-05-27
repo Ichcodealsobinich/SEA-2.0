@@ -34,13 +34,14 @@ public class PersonsRepository extends Repository {
 	public long create(Person p) {
 		
 		if (p==null) {return -1;}
-		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
+		String sql = "INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME, BIRTHDATE) VALUES ( ?, ?, ?, ?, ? )";
 		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			p.setId(getNewUniqueId());
 			ps.setLong(1, p.getId());
 			ps.setByte(2, p.getSalutation().toByte());
 			ps.setString(3, p.getFirstname());
 			ps.setString(4, p.getLastname());
+			ps.setDate(5, Date.valueOf(p.getBirthdate()));
 			ps.execute();
 		} catch (Exception e) {return -1;}
 		return p.getId();
@@ -52,13 +53,15 @@ public class PersonsRepository extends Repository {
 		String sql = "UPDATE personen "
 				+ "ANREDE=?, "
 				+ "VORNAME=?, "
-				+ "NACHNAME=? "
+				+ "NACHNAME=?, "
+				+ "BIRTHDATE=?"
 				+ "WHERE ID=?;";		
 		try (PreparedStatement ps = this.getConnection().prepareStatement(sql);){
 			ps.setByte(1, p.getSalutation().toByte());
 			ps.setString(2, p.getFirstname());
 			ps.setString(3, p.getLastname());
 			ps.setLong(4, p.getId());
+			ps.setDate(5, Date.valueOf(p.getBirthdate()));
 			ps.execute();
 		} catch (Exception e) {return false;}
 		return true;
@@ -111,6 +114,7 @@ public class PersonsRepository extends Repository {
 					person.setSalutation(rs.getByte(2));
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
+					person.setBirthdate(rs.getDate(5));
 					return person;
 				} else {
 					throw new NoSuchElementException();
@@ -119,7 +123,7 @@ public class PersonsRepository extends Repository {
 		}catch (Exception e) {throw new NoSuchElementException();}
 	}
 	
-	public ArrayList<Person> getAll() throws Exception{
+	public ArrayList<Person> getAll() {
 		ArrayList<Person> list = new ArrayList<Person>();
 		String query= "SELECT * FROM personen";
 		try (PreparedStatement ps = this.getConnection().prepareStatement(query);){
@@ -131,11 +135,12 @@ public class PersonsRepository extends Repository {
 					person.setSalutation(rs.getByte(2));
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
+					person.setBirthdate(rs.getDate(5));
 					list.add(person);
-				}
-				return list;
-			}catch (Exception e) {throw new Exception();}			
-		}catch (Exception e) {throw new Exception();}
+				}				
+			}catch (Exception e) {}			
+		}catch (Exception e) {}
+		return list;
 	}
 	
 	public ArrayList<Person> find(String firstname, String lastname) {
@@ -151,10 +156,11 @@ public class PersonsRepository extends Repository {
 					person.setSalutation(rs.getByte(2));
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
+					person.setBirthdate(rs.getDate(5));
 					list.add(person);
 				}
 			}catch (Exception e) {}
-		}catch (Exception e) {}
+		}catch (Exception e) {}		
 		return list;
 	}
 	
@@ -170,6 +176,7 @@ public class PersonsRepository extends Repository {
 					person.setSalutation(rs.getByte(2));
 					person.setFirstName(rs.getString(3));
 					person.setLastName(rs.getString(4));
+					person.setBirthdate(rs.getDate(5));
 					list.add(person);
 				}
 			}catch (Exception e) {}
