@@ -137,8 +137,9 @@ public class Person {
 	 * @return True, if all characters in the name are letters. Otherwise false.
 	 */
 	public static boolean isValidName(final String name) {
+		if (name != null) {return false;}
 		if (name.length()<1 || name.length()>40) {return false;}
 		//return name != null && name.chars().allMatch(Character::isLetter);
-		return name != null && name.chars().allMatch(NamePredicates::isAllowedInNames);		
+		return name.chars().allMatch(NamePredicates::isAllowedInNames);		
 	}
 }
