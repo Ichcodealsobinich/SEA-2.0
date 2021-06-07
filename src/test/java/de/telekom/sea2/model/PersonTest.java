@@ -23,21 +23,20 @@ public class PersonTest {
 		
 		HashMap<String, String> testcases = new HashMap<String, String>();
 		testcases.put("FirstNameTest","FirstNameTest" );
-		//testcases.put("", "");
-		//testcases.put(null, "");
-		//testcases.put("FirstNameTest1", "");
-		//testcases.put("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ""); //more than 40 characters
+		testcases.put("", "");
+		testcases.put(null, "");
+		testcases.put("FirstNameTest1", "");
+		testcases.put("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ""); //more than 40 characters
 		
 		for (String testcase : testcases.keySet()) {
 			//Arrange
 			cut = new Person();
-			cut.setFirstName(testcase);
+			var setResult = cut.setFirstName(testcase);
 		
 			//Act
 			var result = cut.getFirstname();
 
 			//Assert
-			System.out.println("Testcase: " + testcase + " - " + testcases.get(testcase));
 			assertEquals(testcases.get(testcase), result);
 			
 			//reset

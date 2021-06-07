@@ -70,8 +70,11 @@ public class Person {
 	public void setSalutation(byte b) {
 		this.salutation = Salutation.fromByte(b);
 	}
-	public void setFirstName(final String vn) {
-		if (this.isValidName(vn)) {this.firstname = vn;}
+	public boolean setFirstName(final String vn) {
+		if (this.isValidName(vn)) {
+			this.firstname = vn;
+			return true;
+		} else {return false;}
 	}
 	public void setLastName(final String nn) {
 		if (this.isValidName(nn)) {this.lastname=nn;}
@@ -86,8 +89,8 @@ public class Person {
 
 	//constructor
 	public Person() {
-		this.setFirstName("");
-		this.setLastName("");
+		this.firstname="";
+		this.lastname = "";
 		this.setSalutation(Salutation.OTHER);
 		this.setBirthdate(LocalDate.parse("1900-01-01"));
 	}
@@ -137,7 +140,7 @@ public class Person {
 	 * @return True, if all characters in the name are letters. Otherwise false.
 	 */
 	public static boolean isValidName(final String name) {
-		if (name != null) {return false;}
+		if (name == null) {return false;}
 		if (name.length()<1 || name.length()>40) {return false;}
 		//return name != null && name.chars().allMatch(Character::isLetter);
 		return name.chars().allMatch(NamePredicates::isAllowedInNames);		
